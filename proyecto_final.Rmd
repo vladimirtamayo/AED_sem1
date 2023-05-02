@@ -1,6 +1,14 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "AED Proyecto final"
+subtitle: 'Cuál es la canción que pega'
+author: "Gustavo A. Noriega C., Rubén Rico R., Jairo V. Tamayo R"
+date: "2023-05-10"
+lang : es
+output:
+  rmdformats::downcute
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Proyecto final
@@ -9,16 +17,43 @@ output: html_notebook
 
 ### Cuál es la canción que pega
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+#### Introducción
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
+La creación de una canción exitosa es una meta anhelada por la mayoría
+de los artistas, pero no siempre es fácil lograrla. En este trabajo, se
+propone realizar un análisis estadístico de las variables obtenidas de
+las dos plataformas más populares de difusión musical en línea, Spotify
+y YouTube, con el objetivo de identificar los atributos que influyen en
+la aceptación del público y el éxito comercial de una nueva canción en
+el mercado digital. Este estudio permitirá a los artistas enfocarse en
+los atributos más relevantes y optimizar así su producción,
+incrementando sus posibilidades de triunfar en la industria musical.
+Además, se pretende evaluar si es posible predecir la aceptación del
+público y determinar si el artista ofrece al mercado un producto
+apetecido.
+
+#### Objetivos
+
+Establecer cuáles son las variables que afectan favorablemente la
+aceptación del público mediante la aplicación de métodos estadísticos al
+conjunto de datos de las 10 mejores canciones de múltiples artistas
+publicadas en Spotify. Evaluar si existe alguna correlación entre el
+número de vistas en Youtube, el número de comentarios y el número de "me
+gusta", y la frecuencia con la que es sugerido un tema por parte del
+algoritmo de la aplicación.
+
+Conjunto de Datos En la dirección
+<https://www.kaggle.com/datasets/salvatorerastelli/spotify-and-youtube>
+se presenta una matriz de datos [20.718 , 28], en donde al menos 10 de
+las 28 variables son numéricas; entre ellas contempla la cantidad de
+reproducciones en las dos plataformas mencionadas y las manifestaciones
+positivas.
 
 ```{r}
-plot(cars)
+library(readr)
+datos <- read.csv('Spotify_Youtube.csv')
+head(datos)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+Es importante eliminar las columnas que no son relevantes para el
+presente estudio las cuales son:
