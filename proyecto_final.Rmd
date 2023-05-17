@@ -13,7 +13,7 @@ editor_options:
 
 # Proyecto final
 
-## Análisis estadístico de datos 
+## Análisis estadístico de datos
 
 ### Cuál es la canción que pega
 
@@ -51,9 +51,41 @@ positivas.
 
 ```{r}
 library(readr)
+library(dplyr)
 datos <- read.csv('Spotify_Youtube.csv')
-head(datos)
+colnames(datos)
 ```
 
 Es importante eliminar las columnas que no son relevantes para el
-presente estudio las cuales son:
+presente estudio ya que son categóricas:
+
+-   X
+
+-   Artist
+
+-   Track
+
+-   Album
+
+-   Album_type
+
+-   Title
+
+-   official_video
+
+-   Url_spotify
+
+-   Uri
+
+-   Url_youtube
+
+-   Channel
+
+-   Description
+
+-   Licensed
+
+```{r}
+datos %>% select(-one_of('X', 'Artist', 'Track', 'Album', 'Album_type', 'Title', 'official_video', 'Url_spotify', 'Uri', 'Url_youtube', 'Channel', 'Description', 'Licensed'))
+#colnames(datos)
+```
