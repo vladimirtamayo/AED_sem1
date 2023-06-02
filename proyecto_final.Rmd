@@ -96,6 +96,8 @@ Agregar columna views/likes
 datos$v_l 
 ```
 
+Análisis de los datos (02 junio 2023)
+
 PCA (Rubén)
 
-Regresión lineal (Vladimir)
+Regresión lineal (Vladimir) -
