@@ -89,3 +89,13 @@ presente estudio ya que son categóricas:
 datos %>% select(-one_of('X', 'Artist', 'Track', 'Album', 'Album_type', 'Title', 'official_video', 'Url_spotify', 'Uri', 'Url_youtube', 'Channel', 'Description', 'Licensed'))
 #colnames(datos)
 ```
+
+Agregar columna views/likes
+
+```{r}
+datos$v_l 
+```
+
+PCA (Rubén)
+
+Regresión lineal (Vladimir)
