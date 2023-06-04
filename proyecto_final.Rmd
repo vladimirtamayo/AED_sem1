@@ -204,6 +204,12 @@ datos <- datos %>% select(-one_of('X', 'Artist', 'Track', 'Album', 'Album_type',
 colnames(datos)
 ```
 
+### 2.2 Identificación de datos atípicos y tratamiento de los mismos
+
+Se calculó la cantidad de datos faltantes en el conjunto de datos
+"datos" previo al análisis de la información, y se eliminaron dichas
+observaciones del conjunto de datos.
+
 ```{r}
 # Calcula la cantidad de datos faltantes por columna
 datos_faltantes <- colSums(is.na(datos))
@@ -230,41 +236,7 @@ datos_df <-  predict(process, as.data.frame(datos))#log(datos)  # Crear una copi
 summary(datos_df)
 ```
 
-```{r echo=FALSE}
-# Obtiene el número total de columnas del conjunto de datos
-#num_cols <- ncol(datos_df)
-
-# Calcula el tamaño de cada parte
-#part_size <- num_cols %/% 3
-
-# Muestra la primera parte de columnas
-#head(datos_df[, 1:part_size])
-
-# Mouestra la segunda parte de columnas
-#head(datos_df[, (part_size+1):(2*part_size)])
-
-# Muestra la tercera parte de columnas
-#head(datos_df[, ((2*part_size)+1):num_cols])
-```
-
-### 2.4 Identificación de datos atípicos y tratamiento de los mismos
-
-Se calculó la cantidad de datos faltantes en el conjunto de datos
-"datos" previo al análisis de la información, y se eliminaron dichas
-observaciones del conjunto de datos.
-
-```{r echo=FALSE, message=FALSE}
-
-library(knitr)
-library(kableExtra)
-
-# Crear una tabla con los datos faltantes
-tabla_datos_faltantes <- data.frame(Datos_faltantes = datos_faltantes)
-
-# Imprimir la tabla en formato horizontal
-kable(tabla_datos_faltantes, format = "html") %>%
-  kable_styling(bootstrap_options = "striped", font_size = 12, full_width = FALSE, position = "float_left")
-```
+### 
 
 ```{r echo=FALSE, message=FALSE}
 # Imprime el encabezado del conjunto de datos resultante
@@ -377,7 +349,7 @@ algunas de las correlaciones más relevantes:
 library(reshape2)
 library(ggplot2)
 # Calculo de la matriz de correlación
-datos_v_l_r <- datos_df %>% select(-one_of('Stream', 'Comments', 'Likes', 'Views'))
+datos_v_l_r <- datos_df %>% select(one_of('Stream', 'Comments', 'Likes', 'Views', 'Danceability', 'Loudness'))
 correlaciones_vlr <- cor(datos_v_l_r)
 
 # Convertir la matriz en un dataframe
@@ -421,21 +393,21 @@ pairs.panels(datos_v_l_r,
 ```{r include=FALSE}
 # Ajuste de regresión lineal múltiple para predecir la variable views_likes_ratio.
 
-datos_RL <- lm(views_likes_ratio~Danceability
-              + Energy 
-              + Key
+datos_RL <- lm(Likes~Danceability
+              #+ Energy 
+              #+ Key
               + Loudness 
-              + Speechiness 
-              + Acousticness 
-              + Instrumentalness 
-              + Liveness
-              + Valence 
-              + Tempo 
-              + Duration_ms,
-              #+ Views
+              #+ Speechiness 
+              #+ Acousticness 
+              #+ Instrumentalness 
+              #+ Liveness
+              #+ Valence 
+              #+ Tempo 
+              #+ Duration_ms,
+              + Views
               #+ Likes
-              #+ Comments
-              #+ Stream,
+              + Comments
+              + Stream,
               data = datos_v_l_r)
 datos_RL
 ```
@@ -497,21 +469,21 @@ mayor capacidad para explicar la variabilidad en la variable dependiente
 ```{r include=FALSE}
 # Ajuste de regresión lineal múltiple para predecir la variable alcoholviews_likes_ratio.
 
-datos_RL1 <- lm(views_likes_ratio~Danceability
-              + Energy 
+datos_RL1 <- lm(Likes~Danceability
+              #+ Energy 
               #+ Key
-              + Loudness 
-              + Speechiness 
+              #+ Loudness 
+              #+ Speechiness 
               #+ Acousticness 
-              + Instrumentalness 
+              #+ Instrumentalness 
               #+ Liveness
-              + Valence 
+              #+ Valence 
               #+ Tempo 
-              + Duration_ms,
-              #+ Views
+              #+ Duration_ms,
+              + Views
               #+ Likes
-              #+ Comments
-              #+ Stream,
+              + Comments
+              + Stream,
               data = datos_df)
 datos_RL1
 ```
@@ -543,8 +515,7 @@ tabla_formateada
 
 ```
 
-```{r include=FALSE}
-summary(datos_RL)
+```{r}
 summary(datos_RL1)
 ```
 
@@ -591,10 +562,18 @@ loadings1 <- cbind(datos_pca$rotation, var_exp)
 print(loadings1, digits=2)
 ```
 
-```{r fig.height=12, fig.width=12}
+```{r}
+tabla_formateada_pca <- kable(loadings1, align = "c", caption = "Relación de participación de las variables en los componentes") %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
+
+# Imprimir la tabla
+tabla_formateada_pca
+```
+
+```{r fig.height=14, fig.width=10}
 library(factoextra)
 
-fviz_pca_biplot(datos_pca) 
+fviz_pca_biplot(datos_pca, alpha.ind = 0.1,label = c("var")) 
 ```
 
 ```{r}
@@ -611,4 +590,62 @@ qplot(c(1:num.pc), varianza) +
   ylab("Varianza Explicada %") +
   ggtitle("Scree Plot (Diagrama de Codo)") +
   ylim(0,0.25) 
+```
+
+Creamos una nuevo modelo con solo 7 componentes pricipales
+
+```{r}
+fviz_eig(datos_pca)
+```
+
+## Análisis de cluster
+
+```{r}
+datos_cluster <- scale(datos %>% select(-one_of('views_likes_ratio')), scale=TRUE)
+```
+
+```{r fig.height=10, fig.width=10}
+
+# Calculate the Distance
+dist_datos <- dist(datos_cluster, method = "euclidean")
+
+# Perform the hierarchical clustering using the complete linkage
+hc_datos_complete <- hclust(dist_datos,method="complete")
+
+
+# Perform the hierarchical clustering using the single linkage
+hc_datos_single <- hclust(dist_datos,method="single")
+
+
+# Perform the hierarchical clustering using the average linkage
+hc_datos_average <- hclust(dist_datos,method="average")
+
+# Perform the hierarchical clustering using the ward linkage
+hc_datos_ward <- hclust(dist_datos,method="ward.D2")
+
+
+
+par(mfrow = c(2,2))
+plot(hc_datos_complete, main = 'Complete Linkage', labels = FALSE)
+plot(hc_datos_single, main = 'Single Linkage', labels = FALSE)
+plot(hc_datos_average, main = 'Average Linkage', labels = FALSE)
+plot(hc_datos_ward, main = 'Ward Linkage', labels = FALSE)
+
+```
+
+```{r}
+library(dendextend)
+
+
+# Create a dendrogram object from the hclust variable
+dend_datos_c <- as.dendrogram(hc_datos_ward)
+
+# Plot the dendrogram
+plot(dend_datos_c)
+
+# Color branches by cluster formed from the cut at a height of 20 & plot
+dend_250 <- color_branches(dend_datos_c, h = 250)
+
+# Plot the dendrogram with clusters colored below height 20
+plot(dend_250)
 ```
