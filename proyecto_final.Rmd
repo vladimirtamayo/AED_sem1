@@ -590,3 +590,25 @@ loadings1 <- cbind(datos_pca$rotation, var_exp)
 # Imprimir los resultados
 print(loadings1, digits=2)
 ```
+
+```{r fig.height=12, fig.width=12}
+library(factoextra)
+
+fviz_pca_biplot(datos_pca) 
+```
+
+```{r}
+# calculo de la varianza total
+varianza = datos_pca$sdev^2 / sum(datos_pca$sdev^2)
+
+num.pc <- ncol(datos)
+
+# Scree plot
+qplot(c(1:num.pc), varianza) +
+  geom_line() +
+  geom_point(size=4)+
+  xlab("Componente Principal") +
+  ylab("Varianza Explicada %") +
+  ggtitle("Scree Plot (Diagrama de Codo)") +
+  ylim(0,0.25) 
+```
