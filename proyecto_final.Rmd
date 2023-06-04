@@ -576,13 +576,13 @@ los coeficientes.
 
 ```{r}
 # Realizar el análisis PCA
-wine_pca <- prcomp(WINE, scale. = TRUE)
+datos_pca <- prcomp(datos, scale. = TRUE)
 
 # Calcular el porcentaje de varianza explicada por cada componente principal
-var_exp <- (wine_pca$sdev^2) / sum(wine_pca$sdev^2) * 100
+var_exp <- (datos_pca$sdev^2) / sum(datos_pca$sdev^2) * 100
 
 # Agregar los porcentajes de varianza a la matriz
-loadings1 <- cbind(wine_pca$rotation, var_exp)
+loadings1 <- cbind(datos_pca$rotation, var_exp)
 
 # Ordenar las filas de la matriz
 #loadings <- loadings[order(abs(loadings[,1]), decreasing = TRUE),]
