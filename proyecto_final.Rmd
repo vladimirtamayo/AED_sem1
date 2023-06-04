@@ -11,19 +11,25 @@ editor_options:
     wrap: 72
 ---
 
-# Proyecto final
+[**Proyecto final**]{style="font-size: 24px; color: gray;"}
 
-## Análisis estadístico de datos
+[**Análisis estadístico de
+datos**]{style="font-size: 20px; color: grey;"}
 
-### Proyecto: ¿Cuál es la canción que pega?
+[**Nombre Proyecto:**¿Cuál es la canción que
+pega?]{style="font-size: 20px; color: grey;"}
 
-# Tabla de Contenido
+[**Tabla de Contenido**]{style="font-size: 18px; color: black;"}
 
 -   [Introducción](#introducción)
 -   [Objetivos](#objetivos)
 -   [1. Descripción de la pregunta de investigación]
 -   [2. Descripción de los datos]
--   [3. Presentación del análisis estadístico de los datos]\
+-   [3. Presentación del análisis estadístico de los datos]
+-   [3.1 Modelo de Regresión Lineal Múltiple.]
+-   [3.2 Modelo PCA.]
+-   [3.3 Análisis de Cluster.]
+-   [Conclusiones.]
 
 ## Introducción {#introducción}
 
@@ -58,8 +64,6 @@ apetecido.
 
 ## 1. Descripción de la pregunta de investigación
 
-Descripción de la pregunta / problema de investigación:
-
 El propósito de esta investigación es realizar un análisis estadístico
 de las variables obtenidas de dos populares plataformas de streaming de
 música en línea, Spotify y YouTube, para investigar los factores que
@@ -72,14 +76,14 @@ comercial de las canciones en las plataformas digitales de música?
 Los problemas de investigación identificados son los siguientes:
 
 1.  Identificar los atributos musicales y no musicales que están
-    asociados con una mayor aceptación de la audiencia en Spotify y
-    YouTube.
+    asociados con una mayor aceptación "likes" de la audiencia en
+    Spotify y YouTube.
 
 2.  Determinar si existen diferencias significativas en los atributos
     preferidos por la audiencia entre ambas plataformas.
 
-3.  Evaluar la viabilidad de predecir la aceptación de la audiencia en
-    función de los atributos identificados.
+3.  Evaluar la viabilidad de predecir la aceptación "likes" de la
+    audiencia en función de los atributos identificados.
 
 4.  Investigar si ofrecer productos musicales con los atributos deseados
     influye en el éxito comercial de los artistas en la industria
@@ -96,26 +100,22 @@ promoción y distribución de música en línea.
 
 ## 2. Descripción de los datos
 
-Conjunto de Datos En la dirección
+En el conjunto de datos ubicado en la URL
 <https://www.kaggle.com/datasets/salvatorerastelli/spotify-and-youtube>
-se presenta una matriz de datos [20.718 , 28], en donde al menos 10 de
-las 28 variables son numéricas; entre ellas contempla la cantidad de
-reproducciones en las dos plataformas mencionadas y las manifestaciones
-positivas.
+se encuentra una matriz de datos de tamaño [20,718 , 28]. Dentro de esta
+matriz, al menos 10 de las 28 variables son numéricas. Entre estas
+variables se encuentra una que registra la cantidad de reproducciones en
+Spotify y YouTube, así como las manifestaciones positivas o "likes".
 
-El conjunto de datos proporcionado en el enlace
-<https://www.kaggle.com/datasets/salvatorerastelli/spotify-and-youtube>,
-contiene una matriz de datos con un tamaño de 20,718 filas y 28
-columnas. Esto significa que hay 20,718 observaciones o instancias, y
-que cada observación tiene asociadas 28 variables diferentes.
+El conjunto de datos del enlace mencionado consta de 20,718
+observaciones o instancias, y cada observación está asociada a 28
+variables distintas.
 
-Dentro de este conjunto de datos, hay al menos 10 variables que se
-representan como valores numéricos. Estas variables recogen diversos
-aspectos relacionados con las canciones, como el número de
-reproducciones o streams que recibieron en Spotify y YouTube. Además, el
-conjunto de datos incluye variables que miden manifestaciones positivas
-o comentarios, que podrían indicar el nivel de aceptación o compromiso
-del público con las canciones.
+Estas variables numéricas abarcan diferentes aspectos de las canciones,
+como el número de reproducciones o streams en Spotify y YouTube. Además,
+también se incluyen variables que registran manifestaciones positivas o
+comentarios, los cuales podrían ser indicativos del nivel de aceptación
+o compromiso del público con las canciones.
 
 ```{r include=FALSE}
 library(readr)
@@ -125,77 +125,76 @@ datos <- read.csv('Spotify_Youtube.csv')
 colnames(datos)
 ```
 
-```{r include=FALSE}
-str(datos)
-```
-
 ### 2.1 Descripción conceptual de los datos.
 
-Con base en el análisis de los datos, las siguientes variables no deben
-tenerse en cuenta en el modelo de regresión lineal múltiple, debido a
-que para el modelo de regresión lineal múltiple es fundamental excluir
-las variables categóricas, los identificadores únicos y las variables
-relacionadas con la información descriptiva. Estas variables carecen de
-un carácter cuantitativo directo y no proporcionan información relevante
-para predecir con exactitud la variable dependiente. Al excluir estas
-variables del análisis, podemos centrarnos en los predictores
-significativos que mejorarán la capacidad predictiva y la fiabilidad del
-modelo.
+Los datos presentados en el conjunto de información corresponden a
+diferentes variables relacionadas con características y métricas de
+canciones. A continuación, se describe brevemente cada una de las
+variables que se utilizarán en el análisis:
 
-**X**: Número de índice de la observación en el conjunto de datos. Esta
-variable sirve como identificador sin significación estadística y no
-aporta información sustancial para predecir la variable dependiente.
+**Danceability:** Es una medida de la aptitud de una canción para el
+baile, variando entre 0 y 1.
 
-**Artista:** Nombre del artista que interpreta la canción. Como variable
-categórica, no posee carácter cuantitativo y no debe utilizarse
-directamente en el modelo de regresión.
+**Energy:** Representa la intensidad y actividad percibida en una
+canción, también varía entre 0 y 1.
 
-**Url_spotify:** URL de Spotify asociada al artista. Esta variable
-representa una dirección web y carece de carácter cuantitativo. Además,
-no ofrece información significativa para predecir la variable
-dependiente.
+**Key:** Indica la clave tonal de una canción, siendo un número del 0 al
+11 que corresponde a las diferentes tonalidades musicales.
 
-**Track:** Nombre de la canción. Al igual que la variable "Artista", es
-categórica y carece de carácter cuantitativo directo.
+**Loudness**: Es una medida del volumen general de una canción en
+decibeles (dB).
 
-**Álbum:** Nombre del álbum al que pertenece la canción. Al tratarse de
-una variable categórica, no puede incorporarse directamente al modelo de
-regresión lineal múltiple.
+**Speechiness:** Refleja la presencia de elementos hablados en una
+canción, con valores más altos indicando una mayor presencia de palabras
+habladas.
 
-**Tipo_álbum:** Tipo de álbum. Al ser una variable categórica, no posee
-un carácter cuantitativo directo y no aporta información sustancial para
-predecir la variable dependiente.
+**Acousticness**: Indica la cantidad de elementos acústicos presentes en
+una canción, siendo 0 para canciones no acústicas y 1 para canciones
+totalmente acústicas.
 
-**Uri:** Identificador único de la canción en Spotify. Esta variable, al
-servir como identificador único, carece de carácter cuantitativo y no
-aporta información relevante para el modelo de regresión.
+**Instrumentalness:** Mide la probabilidad de que una canción sea
+instrumental, donde valores cercanos a 1 indican alta probabilidad de
+ser instrumental.
 
-**Url_youtube:** URL de YouTube asociada al vídeo de la canción. De
-forma similar a "Url_spotify", esta variable representa una dirección
-web y no posee un carácter cuantitativo directo.
+**Liveness:** Representa la percepción de si una canción fue grabada en
+vivo o en estudio, con valores más altos indicando mayor probabilidad de
+ser en vivo.
 
-**Title:** Título del vídeo de la canción. Como variable categórica, no
-posee un carácter cuantitativo directo y no aporta información
-sustancial para predecir la variable dependiente.
+**Valence:** Es una medida de la positividad o negatividad de una
+canción, variando entre 0 y 1.
 
-**Canal:** Canal de YouTube asociado al artista. Al ser una variable
-categórica, no posee un carácter cuantitativo directo y no aporta
-información relevante para el modelo de regresión.
+**Tempo**: Indica el ritmo o velocidad de una canción en beats por
+minuto (BPM).
 
-**Descripción:** Descripción asociada al vídeo de la canción. Al ser una
-variable textual, carece de carácter cuantitativo directo y no aporta
-información sustancial para predecir la variable dependiente.
+**Duration_ms**: Es la duración de una canción en milisegundos.
 
-**Licensed**" como "**official_video**" son variables categóricas.
+**Views**: Representa la cantidad de visualizaciones o reproducciones
+que ha recibido una canción.
 
-Después de realizar el análisis anterior, se elimina del conjunto de
-datos aquellas columnas o variables categóricas que no aportan
-información relevante para el modelo de regresión.
+**Likes:** Indica la cantidad de "me gusta" o manifestaciones positivas
+que ha recibido una canción.
 
-Asimismo, se calcula la relación entre las variables "Views" y "Likes"
-del conjunto de datos y el resultado se asigna a una nueva columna
-llamada "views_likes_ratio", El conjunto de datos resultante, se muestra
-a continuación, luego de identificar y eliminar los datos faltantes:
+**Comments**: Muestra la cantidad de comentarios que ha generado una
+canción.
+
+**Stream**: Representa la cantidad de veces que una canción ha sido
+transmitida o reproducida en una plataforma de streaming.
+
+Es importante tener en cuenta que en el conjunto de datos hay valores
+faltantes (NA's) en algunas de las variables. Estos valores faltantes
+serán tratados adecuadamente en el análisis posterior.
+
+Con base en la exploración de los datos, se consideró que las siguientes
+variables no deben tenerse en cuenta en el modelo de regresión lineal
+múltiple: **X, Artista, Url_spotify, Track, Álbum, Tipo_álbum, Uri,
+Url_youtube, Title, Canal, Descripción, Licensed, official_video,**
+debido a que son variables categóricas, identificadores únicos y
+variables relacionadas con la información descriptiva. Estas variables
+carecen de un carácter cuantitativo directo y no proporcionan
+información relevante para predecir con exactitud la variable
+dependiente. Al excluir estas variables del análisis, podemos centrarnos
+en los predictores significativos que mejorarán la capacidad predictiva
+y la fiabilidad del modelo.
 
 ```{r include=FALSE}
 # Eliminación de variables categóricas:
@@ -206,11 +205,17 @@ colnames(datos)
 
 ### 2.2 Identificación de datos atípicos y tratamiento de los mismos
 
-Se calculó la cantidad de datos faltantes en el conjunto de datos
-"datos" previo al análisis de la información, y se eliminaron dichas
-observaciones del conjunto de datos.
+En esta parte, se identificaron los datos faltantes del conjunto de
+datos "datos", y se eliminaron dichas observaciones del conjunto de
+datos.
 
-```{r}
+Adicionalmente, se calculó la relación entre las variables "Views" y
+"Likes" del conjunto de datos y el resultado se asignó a una nueva
+columna llamada "views_likes_ratio", El conjunto de datos resultante, se
+muestra a continuación, luego de identificar y eliminar los datos
+faltantes:
+
+```{r include=FALSE}
 # Calcula la cantidad de datos faltantes por columna
 datos_faltantes <- colSums(is.na(datos))
 
@@ -235,8 +240,6 @@ datos_df <-  predict(process, as.data.frame(datos))#log(datos)  # Crear una copi
 ```{r include=FALSE}
 summary(datos_df)
 ```
-
-### 
 
 ```{r echo=FALSE, message=FALSE}
 # Imprime el encabezado del conjunto de datos resultante
@@ -269,11 +272,11 @@ Tabla_estadisticas
 
 ```
 
-A continuación se presentan los histogramas de cada una de las
-variables:
+A continuación se presentan los diagramas de caja o Boxplot de cada una
+de las variables:
 
 ```{r echo=FALSE, message=FALSE}
-# Histogramas de todas las variables
+
 
 # Ajusta los márgenes de la figura
 par(mar = c(2, 2, 2, 2))
@@ -281,7 +284,7 @@ par(mar = c(2, 2, 2, 2))
 # Crea una matriz de subplots para los histogramas
 par(mfrow = c(4, 2))
 
-# Itera sobre las primeras ocho variables y crea el histograma
+# Itera sobre las primeras ocho variables y crea el Diagrama.
 variables <- colnames(datos_df)[1:16]
 for (i in 1:length(variables)) {
   boxplot(datos_df[, variables[i]], main = variables[i], xlab = "", col = "lightblue")
@@ -292,6 +295,9 @@ par(mfrow = c(1, 1))
 ```
 
 ### 2.3 Análisis conjunto de variables (correlaciones)
+
+A continuación, se presenta la Matriz de correlaciones entre las
+variables del conjunto de datos.
 
 ```{r echo=FALSE, message=FALSE}
 library(reshape2)
@@ -317,33 +323,36 @@ ggplot(cor_df, aes(x=Var1, y=Var2, fill=value)) +
   theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"))
 ```
 
-Basado en la matriz de correlaciones, a continuación se describen
-algunas de las correlaciones más relevantes:
+Basado en la Matriz de correlaciones, a continuación se describen
+algunas de las correlaciones más relevantes, que se identificaron:
 
-1.  **Danceability y Valence:** Tienen una correlación positiva de
-    0.463, lo que indica que las canciones con mayor "danceability"
-    tienden a tener una mayor "valence" o positividad en su sonido.
+**Danceability:** Tiene una correlación positiva moderada con Loudness
+(0.36), Valence (0.46) y Energy (0.24).
 
-2.  **Energy y Loudness:** Tienen una correlación positiva de 0.745, lo
-    que sugiere que las canciones con mayor "energy" tienden a tener un
-    mayor "loudness" o volumen.
+**Energy:** Muestra una correlación positiva fuerte con Loudness (0.75).
 
-3.  **Energy y Acousticness:** Tienen una correlación negativa de
-    -0.662, lo que implica que las canciones con mayor "energy" tienden
-    a tener menor "acousticness" o menor presencia de elementos
-    acústicos.
+**Loudness:** Tiene una correlación positiva moderada con Danceability
+(0.36) y Energy (0.75).
 
-4.  **Valence y Views:** Tienen una correlación positiva de 0.602, lo
-    que indica que las canciones con mayor "valence" tienden a tener más
-    vistas en plataformas de streaming.
+**Valence:** Muestra una correlación positiva moderada con Danceability
+(0.46) y una correlación negativa moderada con Acousticness (-0.21).
 
-5.  **Views y Likes:** Tienen una correlación positiva de 0.892, lo que
-    sugiere que las canciones con más vistas también tienden a tener más
-    "likes" o me gusta por parte de los usuarios.
+**Acousticness:** Tiene una correlación negativa moderada con Energy
+(-0.66).
 
-6.  **Danceability y Loudness**: Tienen una correlación positiva de
-    0.358, lo que sugiere que las canciones con mayor "danceability"
-    tienden a tener un mayor "loudness".
+**Instrumentalness**: Muestra una correlación negativa moderada con
+Acousticness (0.28).
+
+**Views:** Tiene una correlación positiva fuerte con Likes (0.89).
+
+**Likes:** Muestra una correlación positiva fuerte con Views (0.89) y
+una correlación moderada con Comments (0.63).
+
+**Comments**: Tiene una correlación moderada con Views (0.43) y Likes
+(0.63).
+
+**Stream**: Muestra una correlación moderada con Views (0.60) y Likes
+(0.65).
 
 ```{r echo=FALSE, message=FALSE}
 library(reshape2)
@@ -369,26 +378,15 @@ ggplot(cor_df_vlr, aes(x=Var1, y=Var2, fill=value)) +
   theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"))
 ```
 
-```{r}
-pairs.panels(datos_v_l_r,
-             smooth = TRUE,      # If TRUE, draws loess smooths
-             scale = FALSE,      # If TRUE, scales the correlation text font
-             density = TRUE,     # If TRUE, adds density plots and histograms
-             ellipses = TRUE,    # If TRUE, draws ellipses
-             method = "pearson", # Correlation method (also "spearman" or "kendall")
-             pch = 21,           # pch symbol
-             lm = FALSE,         # If TRUE, plots linear fit rather than the LOESS (smoothed) fit
-             cor = TRUE,         # If TRUE, reports correlations
-             jiggle = FALSE,     # If TRUE, data points are jittered
-             factor = 2,         # Jittering factor
-             hist.col = 4,       # Histograms color
-             stars = TRUE,       # If TRUE, adds significance level with stars
-             ci = TRUE)          # If TRUE, adds confidence intervals
-```
-
 ## 3. Presentación del análisis estadístico de los datos
 
-### 3.1 Métodos
+### Métodos y resultados.
+
+### 3.1 Modelo de Regresión Lineal Múltiple.
+
+A continuación se realiza el modelo de regresión lineal múltiple a las
+variables del conjunto de datos que presentaron correlación
+significativa:
 
 ```{r include=FALSE}
 # Ajuste de regresión lineal múltiple para predecir la variable views_likes_ratio.
@@ -439,32 +437,49 @@ tabla_formateada
 
 ```
 
+```{r include=FALSE}
+summary(datos_RL)
+```
+
+El modelo de regresión lineal tiene las siguientes conclusiones
+principales:
+
+Las variables predictoras Danceability, Views, Comments y Stream tienen
+un impacto significativo en la variable de respuesta Likes. Esto se
+evidencia por los valores p muy bajos (\< 0.05) asociados a estas
+variables en la tabla de coeficientes.
+
+La variable Danceability muestra una relación positiva significativa con
+Likes, lo que indica que a medida que aumenta la danceabilidad de una
+canción, es probable que aumente el número de likes.
+
+Las variables Views, Comments y Stream también tienen una relación
+positiva significativa con Likes. Esto sugiere que cuanto más vistas,
+comentarios y transmisiones tenga una canción, es más probable que tenga
+más likes.
+
+La variable Loudness no muestra una relación significativa con Likes,
+como se indica por el valor p elevado (0.38137). Esto implica que el
+nivel de sonoridad no tiene un impacto significativo en el número de
+likes.
+
+El modelo tiene un coeficiente de determinación (R-cuadrado) de 0.8915,
+lo que significa que aproximadamente el **89.15%** de la variabilidad en
+la variable Likes puede ser explicada por las variables predictoras
+incluidas en el modelo.
+
+En resumen, el modelo sugiere que la danceabilidad, las vistas, los
+comentarios y las transmisiones son factores importantes que influyen en
+la cantidad de likes que recibe una canción, mientras que el nivel de
+sonoridad no tiene un impacto significativo en los Likes.
+
 Con el objetivo de mejorar el ajuste del modelo de regresión lineal
-múltiple, consideraremos la eliminación de las variables que tienen un
-valor p alto (p \> 0.05), ya que indican una falta de significancia
-estadística en relación a la variable dependiente (views_likes_ratio).
-En base a los resultados proporcionados, las variables a retirar del
-modelo son:
+múltiple, consideraremos la eliminación de la variable Loudness que
+arrojó un valor p alto (p \> 0.05n):
 
--   **Key:** La variable Key tiene un coeficiente estimado de -3.249e-05
-    y un valor p de 0.134677. Esto indica que la tonalidad de la canción
-    (clave musical) no es estadísticamente significativa para predecir
-    la variable dependiente. Por lo tanto, podríamos considerar
-    eliminarla del modelo.
-
--   **Acousticness:** La variable Acousticness tiene un coeficiente
-    estimado de -2.220e-04 y un valor p de 0.555388. Esto indica que la
-    característica acústica de la canción no tiene una relación
-    estadísticamente significativa con la variable dependiente.
-
--   **Tempo:** La variable Tempo tiene un coeficiente estimado de
-    2.440e-06 y un valor p de 0.366352. Esto indica que el tempo de la
-    canción no es estadísticamente significativo para predecir la
-    variable dependiente.
-
-Al retirar estas variables, el modelo podría tener un mayor ajuste y
-mayor capacidad para explicar la variabilidad en la variable dependiente
-(views_likes_ratio).\
+Al retirar esta variable, el modelo podría tener un mayor ajuste y mayor
+capacidad para explicar la variabilidad en la variable dependiente
+"Likes".\
 
 ```{r include=FALSE}
 # Ajuste de regresión lineal múltiple para predecir la variable alcoholviews_likes_ratio.
@@ -515,37 +530,25 @@ tabla_formateada
 
 ```
 
-```{r}
+```{r include=FALSE}
 summary(datos_RL1)
 ```
 
-Al comparar los dos modelos, podemos observar las siguientes
-diferencias:
+En resumen, ambos modelos llegan a conclusiones similares en términos de
+las variables predictoras Danceability, Views, Comments y Stream, las
+cuales tienen un impacto significativo en la cantidad de likes. Sin
+embargo, la variable Loudness no muestra un efecto significativo en los
+likes, por lo que su inclusión en el modelo no es necesaria para
+explicar la variabilidad en la variable de respuesta.
 
-1.  **Predictores adicionales**: El primer modelo "datos_RL", incluye el
-    predictor "Key", "Acousticness", "Liveness" y "Tempo", que no están
-    presentes en el segundo modelo "datos_RL1".
+### 3.2 Modelo PCA.
 
-2.  **Estadísticas de ajuste:** El primer modelo de regresión lineal
-    "datos_RL", tiene un R cuadrado ajustado ligeramente mayor (0.06149)
-    en comparación con el segundo modelo (0.06133), lo que sugiere un
-    ajuste ligeramente mejor en términos de explicación de la
-    variabilidad en la variable dependiente. Sin embargo, la diferencia
-    es mínima y ambos modelos tienen un ajuste deficiente en general.
+En esta etapa del análisis, se procederá a implementar el modelo PCA al
+conjunto de datos "datos". El PCA, o Análisis de Componentes
+Principales, es una técnica utilizada para reducir la dimensionalidad de
+un conjunto de datos y extraer la información más relevante.
 
-En resumen, el primer modelo incluye cuatro predictores adicionales
-("Key", "Acousticness", "Liveness" y "Tempo"), pero estos no son
-significativos en la explicación de la variabilidad en la variable
-dependiente. Por lo tanto, en términos de rendimiento y calidad de
-ajuste, el segundo modelo que solo incluye los predictores
-"Danceability, Energy, Loudness, Speechiness, Instrumentalness, Valence,
-Duration_ms, Comments, Stream" es igualmente válido y puede ser
-preferible debido a su simplicidad y mayor significancia estadística de
-los coeficientes.
-
-### Modelo PCA.
-
-```{r}
+```{r include=FALSE}
 # Realizar el análisis PCA
 datos_pca <- prcomp(datos, scale. = TRUE)
 
@@ -562,7 +565,7 @@ loadings1 <- cbind(datos_pca$rotation, var_exp)
 print(loadings1, digits=2)
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE}
 tabla_formateada_pca <- kable(loadings1, align = "c", caption = "Relación de participación de las variables en los componentes") %>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
 
@@ -570,13 +573,20 @@ tabla_formateada_pca <- kable(loadings1, align = "c", caption = "Relación de pa
 tabla_formateada_pca
 ```
 
-```{r fig.height=14, fig.width=10}
+```{r fig.height=10, fig.width=10,echo=FALSE, message=FALSE}
 library(factoextra)
 
 fviz_pca_biplot(datos_pca, alpha.ind = 0.1,label = c("var")) 
 ```
 
-```{r}
+El análisis del PCA reveló que las variables Danceability, Valence,
+Energy, Loudness, Views, Likes y Key son las más relevantes en la
+explicación de la variabilidad de los datos. Estos hallazgos ayudan a
+identificar las dimensiones principales en los datos y permiten una
+reducción de la dimensionalidad al representar los datos en un espacio
+de menor dimensión definido por los componentes principales.
+
+```{r echo=FALSE, message=FALSE}
 # calculo de la varianza total
 varianza = datos_pca$sdev^2 / sum(datos_pca$sdev^2)
 
@@ -592,37 +602,89 @@ qplot(c(1:num.pc), varianza) +
   ylim(0,0.25) 
 ```
 
-Creamos una nuevo modelo con solo 7 componentes pricipales
-
-```{r}
+```{r echo=FALSE, message=FALSE}
 fviz_eig(datos_pca)
 ```
 
-## Análisis de cluster
+El **PC1** explica aproximadamente el 20.86% de la varianza total de los
+datos y muestra cargas positivas más altas en las variables
+Danceability, Valence, Views y Likes. Esto indica que estas variables
+tienen una mayor influencia en el componente principal 1.
 
-```{r}
+El **PC2** explica alrededor del 16.24% de la varianza y está
+influenciado principalmente por las variables Energy, Loudness, y Views,
+todas con cargas positivas significativas.
+
+El **PC3** tiene una varianza explicada de aproximadamente el 7.96% y se
+ve principalmente afectado por la variable Key, con una carga positiva
+alta.
+
+El **PC4** y **PC5** explican el 7.18% y 6.28% de la varianza,
+respectivamente. El PC4 muestra una alta carga positiva en la variable
+Loudness, mientras que el PC5 está influenciado por las variables
+Speechiness y Acousticness.
+
+Los componentes principales restantes (**PC6** a **PC16**) explican una
+menor cantidad de varianza y están influenciados por diversas
+combinaciones de variables.
+
+## 3.3 Análisis de Cluster.
+
+El análisis de clúster (cluster) que se realizará en este capítulo,
+tiene como objetivo agrupar las observaciones en conjuntos homogéneos o
+clústeres, según la similitud de sus características. En este caso, se
+aplicó el análisis de clúster jerárquico utilizando diferentes métodos
+de enlace, como enlace completo, enlace simple, enlace promedio y enlace
+Ward.
+
+```{r include=FALSE}
+# Estandarización de las variables en el conjunto de datos "datos"
 datos_cluster <- scale(datos %>% select(-one_of('views_likes_ratio')), scale=TRUE)
 ```
 
-```{r fig.height=10, fig.width=10}
-
-# Calculate the Distance
+```{r include=FALSE}
+# Cálculo de las distacias
 dist_datos <- dist(datos_cluster, method = "euclidean")
+```
+
+```{r include=FALSE}
+# Realiza el clustering jerárquico utilizando el enlace completo.
+hc_datos_complete <- hclust(dist_datos,method="complete")
+```
+
+```{r include=FALSE}
+# Realiza el clustering jerárquico utilizando el enlace sencillo.
+hc_datos_single <- hclust(dist_datos,method="single")
+```
+
+```{r include=FALSE}
+# Realiza el clustering jerárquico utilizando el promedio.
+hc_datos_average <- hclust(dist_datos,method="average")
+```
+
+```{r include=FALSE}
+# Realiza el clustering jerárquico utilizando el enlace de Ward.
+hc_datos_ward <- hclust(dist_datos,method="ward.D2")
+```
+
+```{r fig.height=10, fig.width=10,echo=FALSE, message=FALSE}
+
+# Cálculo de las distacias
+#dist_datos <- dist(datos_cluster, method = "euclidean")
 
 # Perform the hierarchical clustering using the complete linkage
-hc_datos_complete <- hclust(dist_datos,method="complete")
+#hc_datos_complete <- hclust(dist_datos,method="complete")
 
 
 # Perform the hierarchical clustering using the single linkage
-hc_datos_single <- hclust(dist_datos,method="single")
+#hc_datos_single <- hclust(dist_datos,method="single")
 
 
 # Perform the hierarchical clustering using the average linkage
-hc_datos_average <- hclust(dist_datos,method="average")
+#hc_datos_average <- hclust(dist_datos,method="average")
 
 # Perform the hierarchical clustering using the ward linkage
-hc_datos_ward <- hclust(dist_datos,method="ward.D2")
-
+#hc_datos_ward <- hclust(dist_datos,method="ward.D2")
 
 
 par(mfrow = c(2,2))
@@ -633,19 +695,68 @@ plot(hc_datos_ward, main = 'Ward Linkage', labels = FALSE)
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE}
 library(dendextend)
 
-
-# Create a dendrogram object from the hclust variable
+# Crea dendrograma 
 dend_datos_c <- as.dendrogram(hc_datos_ward)
 
 # Plot the dendrogram
-plot(dend_datos_c)
+#plot(dend_datos_c)
 
-# Color branches by cluster formed from the cut at a height of 20 & plot
+# Adiciona Color 
 dend_250 <- color_branches(dend_datos_c, h = 250)
 
-# Plot the dendrogram with clusters colored below height 20
+# Grafica. 
 plot(dend_250)
 ```
+
+### Conclusiones.
+
+-   Las variables presentadas en el conjunto de datos incluyen
+    características y métricas de canciones, como la aptitud para el
+    baile, intensidad, clave tonal, volumen, presencia de elementos
+    hablados, acústica, instrumentalidad, percepción de grabación en
+    vivo, positividad, ritmo, duración, visualizaciones, "Likes",
+    comentarios y reproducciones en streaming. Se identificaron
+    variables categóricas y descriptivas que no aportaban información
+    cuantitativa relevante para el modelo de regresión lineal múltiple,
+    por lo que se excluyeron.
+
+-   El análisis de la Matriz de correlaciones reveló relaciones
+    positivas moderadas entre Danceability y Loudness, Valence, Energy,
+    así como entre Loudness y Danceability, Energy. Además, se encontró
+    una correlación negativa moderada entre Valence y Acousticness.
+    Asimismo, se identificaron correlaciones fuertes positivas entre
+    Views y Likes, así como entre Likes y Views. Las variables Comments
+    y Stream también mostraron correlaciones moderadas con Views y
+    Likes. Estas correlaciones resaltan la importancia de estas
+    variables en el análisis de los datos y proporcionan información
+    valiosa para comprender las relaciones entre las características y
+    métricas de las canciones estudiadas.
+
+-   El modelo de regresión lineal reveló que las variables predictoras
+    Danceability, Views, Comments y Stream tuvieron un impacto
+    significativo en la variable de respuesta Likes. Se encontró una
+    relación positiva significativa entre Danceability y Likes, así como
+    entre Views, Comments y Stream con Likes. Sin embargo, no se
+    encontró evidencia de una relación significativa entre Loudness y
+    Likes. El modelo tuvo un coeficiente de determinación de 0.8915, lo
+    que indicó que aproximadamente el 89.15% de la variabilidad en Likes
+    pudo ser explicada por las variables predictoras.
+
+-   Al realizar la comparación de los modelos de regresión lineal
+    múltiple con y sin la variable Loudness, se concluye que las
+    variables Danceability, Views, Comments y Stream tienen un impacto
+    significativo en la cantidad de likes. Sin embargo, la variable
+    Loudness no tiene un efecto significativo en los likes. Por lo
+    tanto, se puede prescindir de la variable Loudness en el modelo,
+    simplificando su interpretación y ajuste, mientras se mantienen las
+    variables predictoras clave para explicar la variabilidad en los
+    likes.
+
+-   La exploración del Modelo PCA señaló que las variables Danceability,
+    Valence, Energy, Loudness, Views, Likes y Key son relevantes para
+    explicar la variabilidad de los datos. Estos resultados facilitan la
+    identificación de las dimensiones principales y permiten reducir la
+    dimensionalidad por los componentes principales.
