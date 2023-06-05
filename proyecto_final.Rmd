@@ -2,10 +2,14 @@
 title: "AED Proyecto final"
 subtitle: 'Cuál es la canción que pega'
 author: "Gustavo A. Noriega C., Rubén Rico R., Jairo V. Tamayo R"
-date: "2023-05-10"
+date: "2023-06-04"
 lang : es
-output:
-  rmdformats::downcute
+output: pdf_document
+fontsize: 10pt
+geometry: margin=0.6in
+fig_width: 4
+fig_height: 3
+fig_caption: true
 editor_options: 
   markdown: 
     wrap: 72
@@ -121,6 +125,8 @@ o compromiso del público con las canciones.
 library(readr)
 library(dplyr)
 library(caret)
+library(tseries)
+library(lmtest)
 datos <- read.csv('Spotify_Youtube.csv')
 colnames(datos)
 ```
@@ -203,7 +209,7 @@ datos <- datos %>% select(-one_of('X', 'Artist', 'Track', 'Album', 'Album_type',
 colnames(datos)
 ```
 
-### 2.2 Identificación de datos atípicos y tratamiento de los mismos
+### 2.2 Identificación y tratamiento de datos atípicos
 
 En esta parte, se identificaron los datos faltantes del conjunto de
 datos "datos", y se eliminaron dichas observaciones del conjunto de
@@ -249,13 +255,13 @@ library(kableExtra)
 
 tabla <- head(datos_df)[1:8]
 Tabla <- kable(tabla, col.names = colnames(tabla)) %>%
-  kable_styling(font_size = 10) %>%
+  kable_styling(font_size = 5) %>%
   add_header_above(header = NULL)
 
 Tabla
 ```
 
-### 2.2 Análisis individual de variables.
+### 2.3 Análisis individual de variables.
 
 La siguiente tabla contiene los estadísticos de cada una de las
 variables del conjunto de datos a analizar:
@@ -264,9 +270,9 @@ variables del conjunto de datos a analizar:
 library(knitr)
 library(kableExtra)
 
-resumen_estadistico <- summary(datos_df)
+resumen_estadistico <- summary(datos_df[1:8])
 Tabla_estadisticas <- kable(resumen_estadistico) %>%
-  kable_styling(font_size = 10)
+  kable_styling(font_size = 5)
 
 Tabla_estadisticas
 
@@ -275,14 +281,14 @@ Tabla_estadisticas
 A continuación se presentan los diagramas de caja o Boxplot de cada una
 de las variables:
 
-```{r echo=FALSE, message=FALSE}
+```{r fig.height=4, fig.width=5,echo=FALSE, message=FALSE }
 
 
 # Ajusta los márgenes de la figura
 par(mar = c(2, 2, 2, 2))
 
 # Crea una matriz de subplots para los histogramas
-par(mfrow = c(4, 2))
+par(mfrow = c(4, 4))
 
 # Itera sobre las primeras ocho variables y crea el Diagrama.
 variables <- colnames(datos_df)[1:16]
@@ -294,7 +300,7 @@ for (i in 1:length(variables)) {
 par(mfrow = c(1, 1))
 ```
 
-### 2.3 Análisis conjunto de variables (correlaciones)
+### 2.4 Análisis conjunto de variables (correlaciones)
 
 A continuación, se presenta la Matriz de correlaciones entre las
 variables del conjunto de datos.
@@ -354,7 +360,7 @@ una correlación moderada con Comments (0.63).
 **Stream**: Muestra una correlación moderada con Views (0.60) y Likes
 (0.65).
 
-```{r echo=FALSE, message=FALSE}
+```{r include=FALSE}
 library(reshape2)
 library(ggplot2)
 # Calculo de la matriz de correlación
@@ -429,11 +435,11 @@ tabla_resumen <- data.frame(
 )
 
 # Formatear la tabla con kable y kableExtra
-tabla_formateada <- kable(tabla_resumen, align = "c", caption = "Resumen del modelo de regresión lineal múltiple datos_RL") %>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
+#tabla_formateada <- kable(tabla_resumen, align = "c", caption = "Resumen del modelo de regresión lineal múltiple datos_RL") %>%
+  #kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
 
 # Imprimir la tabla
-tabla_formateada
+#tabla_formateada
 
 ```
 
@@ -522,11 +528,11 @@ tabla_resumen <- data.frame(
 )
 
 # Formatear la tabla con kable y kableExtra
-tabla_formateada <- kable(tabla_resumen, align = "c", caption = "Resumen del modelo de regresión lineal múltiple datos_RL1") %>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
+#tabla_formateada <- kable(tabla_resumen, align = "c", caption = "Resumen del modelo de regresión lineal múltiple datos_RL1") %>%
+  #kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
 
 # Imprimir la tabla
-tabla_formateada
+#tabla_formateada
 
 ```
 
@@ -540,6 +546,21 @@ cuales tienen un impacto significativo en la cantidad de likes. Sin
 embargo, la variable Loudness no muestra un efecto significativo en los
 likes, por lo que su inclusión en el modelo no es necesaria para
 explicar la variabilidad en la variable de respuesta.
+
+A continuación se presentan los resultados de las pruebas de normalidad,
+homocedasticidad y correlación para la validación del modelo
+
+```{r echo=FALSE, warning=FALSE}
+ks.test(datos_RL1$residuals, "pnorm")
+```
+
+```{r echo=FALSE}
+gqtest(datos_RL1, order.by = datos_df$Likes)
+```
+
+```{r echo=FALSE}
+bgtest(datos_RL1, order= 1 )
+```
 
 ### 3.2 Modelo PCA.
 
@@ -566,14 +587,14 @@ print(loadings1, digits=2)
 ```
 
 ```{r echo=FALSE, message=FALSE}
-tabla_formateada_pca <- kable(loadings1, align = "c", caption = "Relación de participación de las variables en los componentes") %>%
-  kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 12)
+tabla_formateada_pca <- kable(loadings1[1:10,1:10], align = "c", caption = "Relación de participación de las variables en los componentes") %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, font_size = 5)
 
 # Imprimir la tabla
 tabla_formateada_pca
 ```
 
-```{r fig.height=10, fig.width=10,echo=FALSE, message=FALSE}
+```{r fig.height=6, fig.width=6,echo=FALSE, message=FALSE}
 library(factoextra)
 
 fviz_pca_biplot(datos_pca, alpha.ind = 0.1,label = c("var")) 
@@ -581,12 +602,13 @@ fviz_pca_biplot(datos_pca, alpha.ind = 0.1,label = c("var"))
 
 El análisis del PCA reveló que las variables Danceability, Valence,
 Energy, Loudness, Views, Likes y Key son las más relevantes en la
-explicación de la variabilidad de los datos. Estos hallazgos ayudan a
-identificar las dimensiones principales en los datos y permiten una
-reducción de la dimensionalidad al representar los datos en un espacio
-de menor dimensión definido por los componentes principales.
+explicación de la variabilidad de los datos en las dimensiones 1 y 2.
+Estos hallazgos ayudan a identificar las dimensiones principales en los
+datos y permiten una reducción de la dimensionalidad al representar los
+datos en un espacio de menor dimensión definido por los componentes
+principales.
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, fig.height=3, fig.width=6, warning=FALSE}
 # calculo de la varianza total
 varianza = datos_pca$sdev^2 / sum(datos_pca$sdev^2)
 
@@ -595,7 +617,7 @@ num.pc <- ncol(datos)
 # Scree plot
 qplot(c(1:num.pc), varianza) +
   geom_line() +
-  geom_point(size=4)+
+  geom_point(size=2)+
   xlab("Componente Principal") +
   ylab("Varianza Explicada %") +
   ggtitle("Scree Plot (Diagrama de Codo)") +
@@ -603,7 +625,7 @@ qplot(c(1:num.pc), varianza) +
 ```
 
 ```{r echo=FALSE, message=FALSE}
-fviz_eig(datos_pca)
+#fviz_eig(datos_pca)
 ```
 
 El **PC1** explica aproximadamente el 20.86% de la varianza total de los
@@ -649,17 +671,17 @@ dist_datos <- dist(datos_cluster, method = "euclidean")
 
 ```{r include=FALSE}
 # Realiza el clustering jerárquico utilizando el enlace completo.
-hc_datos_complete <- hclust(dist_datos,method="complete")
+#hc_datos_complete <- hclust(dist_datos,method="complete")
 ```
 
 ```{r include=FALSE}
 # Realiza el clustering jerárquico utilizando el enlace sencillo.
-hc_datos_single <- hclust(dist_datos,method="single")
+#hc_datos_single <- hclust(dist_datos,method="single")
 ```
 
 ```{r include=FALSE}
 # Realiza el clustering jerárquico utilizando el promedio.
-hc_datos_average <- hclust(dist_datos,method="average")
+#hc_datos_average <- hclust(dist_datos,method="average")
 ```
 
 ```{r include=FALSE}
@@ -687,11 +709,11 @@ hc_datos_ward <- hclust(dist_datos,method="ward.D2")
 #hc_datos_ward <- hclust(dist_datos,method="ward.D2")
 
 
-par(mfrow = c(2,2))
-plot(hc_datos_complete, main = 'Complete Linkage', labels = FALSE)
-plot(hc_datos_single, main = 'Single Linkage', labels = FALSE)
-plot(hc_datos_average, main = 'Average Linkage', labels = FALSE)
-plot(hc_datos_ward, main = 'Ward Linkage', labels = FALSE)
+#par(mfrow = c(2,2))
+#plot(hc_datos_complete, main = 'Complete Linkage', labels = FALSE)
+#plot(hc_datos_single, main = 'Single Linkage', labels = FALSE)
+#plot(hc_datos_average, main = 'Average Linkage', labels = FALSE)
+#plot(hc_datos_ward, main = 'Ward Linkage', labels = FALSE)
 
 ```
 
@@ -721,19 +743,19 @@ plot(dend_250)
     comentarios y reproducciones en streaming. Se identificaron
     variables categóricas y descriptivas que no aportaban información
     cuantitativa relevante para el modelo de regresión lineal múltiple,
-    por lo que se excluyeron.
+    por lo que se excluyeron. Para evitar la distorsión generada por el
+    desbalance de los datos dado que las variables oscilaban entre
+    unidades y miles de millones fue necesario normalizarlas.
 
 -   El análisis de la Matriz de correlaciones reveló relaciones
     positivas moderadas entre Danceability y Loudness, Valence, Energy,
     así como entre Loudness y Danceability, Energy. Además, se encontró
     una correlación negativa moderada entre Valence y Acousticness.
     Asimismo, se identificaron correlaciones fuertes positivas entre
-    Views y Likes, así como entre Likes y Views. Las variables Comments
-    y Stream también mostraron correlaciones moderadas con Views y
-    Likes. Estas correlaciones resaltan la importancia de estas
-    variables en el análisis de los datos y proporcionan información
-    valiosa para comprender las relaciones entre las características y
-    métricas de las canciones estudiadas.
+    Views, Likes, Comments y Stream. Estas correlaciones resaltan la
+    importancia de estas variables en el análisis de los datos y
+    proporcionan información valiosa para comprender las relaciones
+    entre las características y métricas de las canciones estudiadas.
 
 -   El modelo de regresión lineal reveló que las variables predictoras
     Danceability, Views, Comments y Stream tuvieron un impacto
@@ -753,10 +775,36 @@ plot(dend_250)
     tanto, se puede prescindir de la variable Loudness en el modelo,
     simplificando su interpretación y ajuste, mientras se mantienen las
     variables predictoras clave para explicar la variabilidad en los
-    likes.
+    likes. Las pruebas sobre los supuestos del modelo simplificado
+    arrojaron un p-value \< 2.2e-16, presenta una significancia
+    estadística menor a 0.05, que indica una evidencia suficiente de que
+    los datos se distribuyen de manera normal, son homocedasticos y
+    están correlacionados.
 
 -   La exploración del Modelo PCA señaló que las variables Danceability,
     Valence, Energy, Loudness, Views, Likes y Key son relevantes para
     explicar la variabilidad de los datos. Estos resultados facilitan la
     identificación de las dimensiones principales y permiten reducir la
-    dimensionalidad por los componentes principales.
+    dimensionalidad por los componentes principales. Igualmente, se
+    puede apreciar la existencia de dos tendencias claramente definidas
+    en los géneros musicales. Por un lado, hay grupos de canciones muy
+    dinámicas, mientras que por otro lado, se destacan aquellas que
+    predominan por su carácter acústico e instrumental.
+
+-   Hasta el **PC6** se explica aproximadamente el 64.78% de la varianza
+    total de los datos.
+
+-   Basados en los resultados obtenidos con el modelo PCA, se realizó un
+    análisis de Clusters para confirmar la existencia de las dos grandes
+    tendencias en los géneros musicales, y se observó que uno de los
+    grupos contiene un mayor número de canciones en comparación con el
+    otro.
+
+-   Las canciones exitosas se pueden determinar por tres criterios, que
+    sean acústicas e instrumentales, que sean muy dinámicas o por último
+    que tengan una amplia difusión, entonces, una canción de muy buena
+    interpretación con mucha difusión llegará a ser un éxito y por otro
+    lado una canción muy dinámica con poca o nula difusión no lo será e
+    inclusive podría darse que una canción de regular interpretación y
+    medio dinamismo y con mucha difusión, llegará a ser categorizada con
+    un éxito musical.
